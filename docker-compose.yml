@@ -5,6 +5,12 @@ services:
     build:
       context: ./backend
     restart: always
+    user: ${PUID:-1000}:${PGID:-1000}
+    security_opt:
+      - "no-new-privileges:true"
+    cap-drop:
+      - SETUID
+      - SETGID
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/pastebook
       - SPRING_DATA_MONGODB_DATABASE=pastebook
@@ -24,6 +30,12 @@ services:
 #    build:
 #      context: ./frontend
     restart: always
+    user: ${PUID:-1000}:${PGID:-1000}
+    security_opt:
+      - "no-new-privileges:true"
+    cap-drop:
+      - SETUID
+      - SETGID
     environment:
       - TITLE=${TITLE}
       - DESCRIPTION=${DESCRIPTION}
@@ -42,6 +54,12 @@ services:
     depends_on:
       - backend
       - frontend
+    user: ${PUID:-1000}:${PGID:-1000}
+    security_opt:
+      - "no-new-privileges:true"
+    cap-drop:
+      - SETUID
+      - SETGID
     environment:
       VIRTUAL_HOST: ${VIRTUAL_HOST:?missing VIRTUAL_HOST}
       LETSENCRYPT_HOST: ${VIRTUAL_HOST}
@@ -58,6 +76,12 @@ services:
     image: mongo:6.0
     container_name: mongo
     restart: always
+    user: ${PUID:-1000}:${PGID:-1000}
+    security_opt:
+      - "no-new-privileges:true"
+    cap-drop:
+      - SETUID
+      - SETGID
     environment:
       MONGO_INITDB_DATABASE: pastebook
     volumes:
@@ -71,6 +95,12 @@ services:
     container_name: minio
     restart: always
     command: server /data/db
+    user: ${PUID:-1000}:${PGID:-1000}
+    security_opt:
+      - "no-new-privileges:true"
+    cap-drop:
+      - SETUID
+      - SETGID
     environment:
       - MINIO_ROOT_USER=minioadmin
       - MINIO_ROOT_PASSWORD=minioadmin
@@ -93,5 +123,7 @@ volumes:
 
 networks:
   pastebook-network:
+  nginx-proxy:
+    external: true
   nginx-proxy:
     external: true
